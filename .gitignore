@@ -19,6 +19,7 @@
 *.tar.gz
 *.rar
 .idea/
+.local/
 target/
 .vscode/
 .lh/

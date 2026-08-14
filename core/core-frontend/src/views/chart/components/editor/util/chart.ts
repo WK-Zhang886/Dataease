@@ -1,7 +1,16 @@
 import { useI18n } from '@/hooks/web/useI18n'
-import { deepCopy } from '@/utils/utils'
-import { formatterItem, isEnLocal } from '@/views/chart/components/js/formatter'
+import { deepCopy, getLocale } from '@/utils/utils'
 const { t } = useI18n()
+
+const isEnLocal = !['zh', 'zh-cn', 'zh-CN', 'tw'].includes(getLocale())
+const formatterItem = {
+  type: 'auto',
+  unitLanguage: isEnLocal ? 'en' : 'ch',
+  unit: 1,
+  suffix: '',
+  decimalCount: 2,
+  thousandSeparator: true
+}
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
   basicStyle: {

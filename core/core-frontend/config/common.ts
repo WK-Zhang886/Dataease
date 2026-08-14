@@ -14,6 +14,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components-secondary/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components-secondary/resolvers'
 const root = process.cwd()
+const fastDev = process.env.DATAEASE_FAST_DEV !== '0'
 
 export function pathResolve(dir: string) {
   return resolve(root, '.', dir)
@@ -50,19 +51,25 @@ export default {
       compositionOnly: true,
       include: [resolve(__dirname, 'src/locales/**')]
     }),
-    eslintPlugin({
-      cache: false,
-      include: [
-        'src/**/*.ts',
-        'src/**/*.tsx',
-        'src/**/*.js',
-        'src/**/*.vue',
-        'src/*.ts',
-        'src/*.js',
-        'src/*.vue'
-      ]
-    }),
-    viteStylelint()
+    ...(
+      fastDev
+        ? []
+        : [
+            eslintPlugin({
+              cache: false,
+              include: [
+                'src/**/*.ts',
+                'src/**/*.tsx',
+                'src/**/*.js',
+                'src/**/*.vue',
+                'src/*.ts',
+                'src/*.js',
+                'src/*.vue'
+              ]
+            }),
+            viteStylelint()
+          ]
+    )
   ],
   css: {
     preprocessorOptions: {

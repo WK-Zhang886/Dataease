@@ -515,7 +515,13 @@ public class ExcelUtils {
     }
 
     private String cellType(String value) {
-        if (StringUtils.isEmpty(value) || value.length() > 19) {
+        if (isBlankExcelValue(value)) {
+            return null;
+        }
+        if (isDateValue(value)) {
+            return "DATETIME";
+        }
+        if (value.length() > 19) {
             return "TEXT";
         }
         String regex = "^-?\\d+(\\.\\d+)?$";
@@ -539,13 +545,13 @@ public class ExcelUtils {
     }
 
     private void cellType(String value, int i, TableField tableFiled) {
-        if (StringUtils.isEmpty(value)) {
+        String type = cellType(value);
+        if (StringUtils.isEmpty(type)) {
             return;
         }
         if (i == 0) {
-            tableFiled.setFieldType(cellType(value));
+            tableFiled.setFieldType(type);
         } else {
-            String type = cellType(value);
             if (tableFiled.getFieldType() == null) {
                 tableFiled.setFieldType(type);
             } else {
@@ -555,9 +561,40 @@ public class ExcelUtils {
                 if (type.equalsIgnoreCase("DOUBLE") && tableFiled.getFieldType().equalsIgnoreCase("LONG")) {
                     tableFiled.setFieldType(type);
                 }
+                if (!type.equalsIgnoreCase(tableFiled.getFieldType())
+                        && !type.equalsIgnoreCase("DOUBLE")
+                        && !tableFiled.getFieldType().equalsIgnoreCase("DOUBLE")) {
+                    tableFiled.setFieldType("TEXT");
+                }
             }
         }
 
+    }
+
+    private static boolean isBlankExcelValue(String value) {
+        if (StringUtils.isBlank(value)) {
+            return true;
+        }
+        String trimmed = value.trim();
+        return StringUtils.equalsAnyIgnoreCase(trimmed, "#N/A", "N/A", "NA", "NULL");
+    }
+
+    private static boolean isDateValue(String value) {
+        if (StringUtils.isBlank(value)) {
+            return false;
+        }
+        String trimmed = value.trim();
+        return trimmed.matches("^\\d{4}[-/]\\d{1,2}[-/]\\d{1,2}([ T]\\d{1,2}:\\d{2}(:\\d{2})?)?$");
+    }
+
+    private static String uniqueFieldName(String fieldName, Map<String, Integer> fieldNameCounts) {
+        String normalized = StringUtils.trimToEmpty(fieldName);
+        Integer count = fieldNameCounts.getOrDefault(normalized, 0) + 1;
+        fieldNameCounts.put(normalized, count);
+        if (count == 1) {
+            return normalized;
+        }
+        return normalized + "_" + count;
     }
 
     @Data
@@ -578,7 +615,7 @@ public class ExcelUtils {
                 if (cellData.getType().equals(CellDataTypeEnum.NUMBER)) {
                     value = cellData.getNumberValue().toString();
                 }
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtils.isBlank(value)) {
                     continue;
                 }
                 headerKey.add(key);
@@ -589,20 +626,12 @@ public class ExcelUtils {
         @Override
         public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
             List<String> line = new ArrayList<>();
-            for (Integer key : dataMap.keySet()) {
+            for (Integer key : headerKey) {
                 String value = dataMap.get(key);
-                if (StringUtils.isEmpty(value)) {
+                if (isBlankExcelValue(value)) {
                     value = null;
                 }
-                if (headerKey.contains(key)) {
-                    line.add(value);
-                }
-            }
-            int size = line.size();
-            if (size < header.size()) {
-                for (int i = 0; i < header.size() - size; i++) {
-                    line.add(null);
-                }
+                line.add(value);
             }
             data.add(line.toArray(new String[line.size()]));
         }
@@ -614,6 +643,7 @@ public class ExcelUtils {
         public void clear() {
             data.clear();
             header.clear();
+            headerKey.clear();
         }
     }
 
@@ -630,12 +660,14 @@ public class ExcelUtils {
                 List<TableField> fields = new ArrayList<>();
                 excelReader.read(readSheet);
                 if (CollectionUtils.isEmpty(noModelDataListener.getHeader())) {
-                    DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
+                    continue;
                 }
+                Map<String, Integer> fieldNameCounts = new HashMap<>();
                 for (String s : noModelDataListener.getHeader()) {
+                    String fieldName = uniqueFieldName(s, fieldNameCounts);
                     TableField tableFiled = new TableField();
                     tableFiled.setFieldType(null);
-                    tableFiled.setName(s);
+                    tableFiled.setName(fieldName);
                     tableFiled.setOriginName(s);
                     tableFiled.setChecked(true);
                     fields.add(tableFiled);

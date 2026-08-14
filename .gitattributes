@@ -1,7 +1,0 @@
-*.sql linguist-language=java
-*.yml linguist-language=Java
-*.html linguist-language=Java
-*.js linguist-language=Java
-*.xml linguist-language=Java
-*.css linguist-language=Java
-*.ts linguist-language=Java
