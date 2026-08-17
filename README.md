@@ -1,100 +1,72 @@
-# DataEase 本地改造版
+# DataEase 改造版
 
-这是基于 DataEase 源码整理出来的本地开发版，主要用于后续修改 Excel 导入逻辑，适配芳烃价格这类不规则 Excel 表格。
-
-## 当前用途
-
-- 本地运行 DataEase 前后端
-- 调试 Excel 上传和字段类型识别
-- 修改后端 Excel 导入逻辑
-- 后续可迁移到 Linux 服务器部署，并通过网页访问
+本项目基于 **DataEase 开源版**源码进行改造，主要用于本地开发与二次开发，后续可部署到 Linux 服务器使用。具体改造点不在此说明，如需了解请查看代码。
 
 ## 快速启动
 
-双击根目录：
+双击根目录脚本，或手动执行：
 
 ```bat
-D:\Dataease\start-dataease-dev.bat
+start-dataease-dev.bat
 ```
 
 只检查环境：
 
 ```bat
-D:\Dataease\start-dataease-dev-check.bat
+start-dataease-dev-check.bat
 ```
 
 启动后访问：
 
 ```text
-http://localhost:8080
+前端：http://localhost:8080
+后端：http://localhost:8100
 ```
 
-后端接口：
+> Linux 部署：见 `deploy_linux/` 目录，内含一键部署脚本 `deploy.sh`、Nginx 配置、systemd 服务及部署说明。
 
-```text
-http://localhost:8100
-```
+## 目录结构
 
-## 主要目录
+| 目录/文件 | 作用 |
+|-----------|------|
+| `core/core-backend` | 后端（Spring Boot）。登录、权限、数据源、数据集、Excel 导入、字段类型识别、图表查询等核心逻辑。 |
+| `core/core-frontend` | 前端（Vue 3 + Vite）。数据源页面、Excel 上传页面、仪表板、图表编辑器等界面。 |
+| `sdk` | 公共接口、DTO、插件接口与工具类，后端模块依赖。 |
+| `drivers` | 数据库驱动。 |
+| `dev` | 本地开发启动脚本。 |
+| `deploy_linux` | Linux 部署脚本与文档（standalone 单机部署）。 |
+| `start-dataease-dev.bat` | Windows 一键启动脚本。 |
+| `start-dataease-dev-check.bat` | Windows 环境检查脚本。 |
 
-- `core/core-backend`：后端，Spring Boot。Excel 导入、字段类型识别、数据源、数据集、图表查询等逻辑主要在这里。
-- `core/core-frontend`：前端，Vue 3 + Vite。数据源页面、Excel 上传页面、图表编辑器主要在这里。
-- `sdk`：公共接口、DTO、插件接口和工具类。
-- `drivers`：数据库驱动。
-- `dev`：本地开发启动脚本。
-
-Excel 导入核心文件：
+Excel 导入核心代码：
 
 ```text
 core/core-backend/src/main/java/io/dataease/datasource/provider/ExcelUtils.java
 ```
 
-Excel 导入测试文件：
+Excel 导入测试：
 
 ```text
 core/core-backend/src/test/java/io/dataease/datasource/provider/ExcelUtilsTest.java
 ```
 
-## 已完成的本地改造
-
-- 空表头 Sheet 会跳过，不再直接导致导入失败。
-- 重复字段名会自动追加 `_2`、`_3`。
-- `#N/A`、`N/A`、`NA`、`NULL`、空字符串会按空值处理。
-- 日期格式字符串会识别为 `DATETIME`。
-- 整数列后续遇到小数时，会升级为 `DOUBLE`。
-- 行数据按表头顺序写入，减少缺值导致的列错位。
-- 前端开发默认跳过实时 eslint/stylelint，减少本地启动卡顿。
-- 增加一键启动脚本。
-
 ## 本地数据
 
-本地运行数据不在 GitHub 仓库里，位置是：
+本地运行数据不纳入版本控制，位于：
 
 ```text
-D:\Dataease\.local\dataease2.0
+.local/dataease2.0
 ```
 
-这里通常包含：
+包含 H2 数据库、上传文件、日志、缓存等。如需清空本地数据，删除该目录即可。`.local` 下还可能包含本地 Node 等开发工具，请勿随意删除整个 `.local`。
 
-- H2 数据库
-- 上传文件
-- 日志
-- 缓存
+## 本地环境要求
 
-如果要清空本地 DataEase 数据，可以删除：
+- JDK 21
+- Maven 3.9+
+- Node.js 18+（项目内置 Node 也可）
 
-```text
-D:\Dataease\.local\dataease2.0
-```
+## 登录账号
 
-不要随便删除整个 `.local`，里面还可能有本地 Node.js 等开发工具。
-
-## 更多交接说明
-
-更详细的本地环境、启动参数、验证命令、Git 说明在：
-
-```text
-README_DEV.md
-```
-
-下一次开新对话时，可以让 Codex 先读取 `README.md` 和 `README_DEV.md`，再继续修改 Excel 导入功能。
+- 账号：`admin`
+- 密码：本地开发（desktop 模式）默认免登录；Linux 部署（standalone 模式）默认 `123456`，可通过后端启动参数 `--dataease.default-pwd` 修改。
