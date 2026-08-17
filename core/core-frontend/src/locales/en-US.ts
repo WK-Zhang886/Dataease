@@ -1345,6 +1345,7 @@ export default {
     chart_bidirectional_bar: 'Symmetric bar chart',
     chart_progress_bar: 'Progress bar',
     chart_line: 'Basic line chart',
+    chart_year_compare_line: 'Year comparison line chart',
     chart_area_stack: 'Stacked line chart',
     chart_pie: 'Pie chart',
     chart_pie_donut: 'Ring chart',

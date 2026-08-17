@@ -1465,6 +1465,7 @@ export default {
     chart_bidirectional_bar: '对称条形图',
     chart_progress_bar: '进度条',
     chart_line: '基础折线图',
+    chart_year_compare_line: '年份对比折线图',
     chart_area_stack: '堆叠折线图',
     chart_pie: '饼图',
     chart_pie_donut: '环形图',

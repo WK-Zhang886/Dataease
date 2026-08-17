@@ -111,7 +111,7 @@ const noChildrenFieldChart = chart => {
  * @param chart
  */
 export const supportExtremumChartType = chart => {
-  return ['line', 'area', 'bar', 'bar-group'].includes(chart.type)
+  return ['line', 'year-compare-line', 'area', 'bar', 'bar-group'].includes(chart.type)
 }
 
 const chartContainerId = chart => {

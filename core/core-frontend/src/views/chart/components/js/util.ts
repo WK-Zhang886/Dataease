@@ -153,7 +153,7 @@ export function getColors(chart, colors, reset) {
         })
       }
     }
-  } else if (equalsAny(chart.type, 'bar-group', 'line')) {
+  } else if (equalsAny(chart.type, 'bar-group', 'line', 'year-compare-line')) {
     // 拿到data中的category，并去重，然后构建seriesColor
     if (chart.data) {
       const data = chart.data.data

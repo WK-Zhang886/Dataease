@@ -412,7 +412,7 @@ const filter = (firstLoad?: boolean) => {
     webParamsFilters: element.value.webParamsFilters,
     drill: state.drillClickDimensionList,
     resultCount: resultCount.value,
-    resultMode: resultMode.value
+    resultMode: view.value.type === 'year-compare-line' ? 'all' : resultMode.value
   }
   // 定时报告相关勿动
   if (route.path === '/preview' && route.query.taskId) {

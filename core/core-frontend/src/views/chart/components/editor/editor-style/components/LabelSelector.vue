@@ -214,7 +214,7 @@ const labelPositionVList = [
 ]
 
 const labelPositionV = computed(() => {
-  if (['line', 'area-stack', 'area'].includes(chartType.value)) {
+  if (['line', 'year-compare-line', 'area-stack', 'area'].includes(chartType.value)) {
     return labelPositionVList.filter(item => item.value !== 'middle')
   }
   return labelPositionVList

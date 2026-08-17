@@ -284,7 +284,7 @@ watch(
 const getFields = (id, chartId, type) => {
   if (id && chartId) {
     fieldLoading.value = true
-    getFieldByDQ(id, chartId, { type: type })
+    getFieldByDQ(id, chartId, { type: resolveFieldRequestChartType(type) })
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []
         state.quota = (res.quotaList as unknown as Field[]) || []
@@ -310,6 +310,10 @@ const getFields = (id, chartId, type) => {
 
     fieldLoading.value = false
   }
+}
+
+const resolveFieldRequestChartType = type => {
+  return type === 'year-compare-line' ? 'line' : type
 }
 
 const chartStyleShow = computed(() => {
@@ -964,6 +968,9 @@ const onAxisChange = (e, axis: AxisType) => {
 }
 
 const calcData = (view, resetDrill = false, updateQuery = '') => {
+  if (view.type === 'year-compare-line') {
+    view.resultMode = 'all'
+  }
   if (
     view.refreshTime === '' ||
     parseFloat(view.refreshTime).toString() === 'NaN' ||
@@ -1067,16 +1074,19 @@ const onTypeChange = (render, type) => {
       removedAxis.length &&
         emitter.emit('removeAxis', { axisType: axis, axis: removedAxis, editType: 'remove' })
     })
-    if (view.value.type === 'line') {
+    if (['line', 'year-compare-line'].includes(view.value.type)) {
       if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
         const axis = view.value.yAxis.splice(1)
         emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
       }
     }
+    if (view.value.type === 'year-compare-line') {
+      view.value.resultMode = 'all'
+    }
     if (['liquid', 'gauge', 'indicator', 'multi-scatter', 't-heatmap'].includes(view.value.type)) {
       removeItems('drillFields')
     }
-    if (!['line', 'area', 'bar', 'bar-group'].includes(view.value.type)) {
+    if (!['line', 'year-compare-line', 'area', 'bar', 'bar-group'].includes(view.value.type)) {
       // 清除图表标注
       const pointElement = document.getElementById('point_' + view.value.id)
       if (pointElement) {

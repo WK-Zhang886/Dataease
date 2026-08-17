@@ -96,7 +96,7 @@ export const CHART_MIX_DEFAULT_BASIC_STYLE = {
   leftLineWidth: 2,
   leftLineSymbol: 'circle',
   leftLineSymbolSize: 4,
-  leftLineSmooth: true
+  leftLineSmooth: false
 }
 
 export interface MixChartBasicStyle extends ChartBasicStyle {

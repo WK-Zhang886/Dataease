@@ -9,7 +9,7 @@ export const CAROUSEL_MANAGER_INSTANCES = new Map<string, ChartCarouselTooltip>(
  */
 const CHART_CATEGORY = {
   COLUMN: ['bar', 'bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'],
-  LINE: ['line', 'area', 'area-stack'],
+  LINE: ['line', 'year-compare-line', 'area', 'area-stack'],
   MIX: ['chart-mix', 'chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line'],
   PIE: ['pie', 'pie-donut']
 }

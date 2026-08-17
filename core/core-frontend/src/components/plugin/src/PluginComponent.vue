@@ -34,13 +34,12 @@ const generateRamStr = (len: number) => {
 }
 
 const importProxy = (bytesArray: any[]) => {
-  const promise = import(
-    `../../../../../../../extensions/${formatArray(bytesArray[8])}/${formatArray(
-      bytesArray[9]
-    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}/${formatArray(
-      bytesArray[12]
-    )}.vue`
-  )
+  const pluginPath = `../../../../../../../extensions/${formatArray(bytesArray[8])}/${formatArray(
+    bytesArray[9]
+  )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}/${formatArray(
+    bytesArray[12]
+  )}.vue`
+  const promise = import(/* @vite-ignore */ pluginPath)
   promise
     .then((res: any) => {
       plugin.value = res.default

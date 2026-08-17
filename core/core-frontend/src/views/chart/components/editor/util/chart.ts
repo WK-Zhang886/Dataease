@@ -1370,6 +1370,13 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'trend',
+        value: 'year-compare-line',
+        title: t('chart.chart_year_compare_line'),
+        icon: 'line'
+      },
+      {
+        render: 'antv',
+        category: 'trend',
         value: 'area',
         title: t('chart.chart_area'),
         icon: 'area'
@@ -1721,12 +1728,12 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineWidth: 2,
   lineSymbol: 'circle',
   lineSymbolSize: 4,
-  lineSmooth: true,
+  lineSmooth: false,
   // 左轴默认值需在画布缩放前补齐，保证双线组合图左右 geometry 尺寸一致
   leftLineWidth: 2,
   leftLineSymbol: 'circle',
   leftLineSymbolSize: 4,
-  leftLineSmooth: true,
+  leftLineSmooth: false,
   barDefault: true,
   radiusColumnBar: 'rightAngle',
   columnBarRightAngleRadius: 20,

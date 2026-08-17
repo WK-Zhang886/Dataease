@@ -1462,6 +1462,7 @@ export default {
     chart_bidirectional_bar: '對稱長條圖',
     chart_progress_bar: '進度列',
     chart_line: '基礎折線圖',
+    chart_year_compare_line: '年份對比折線圖',
     chart_area_stack: '堆疊折線圖',
     chart_pie: '餅圖',
     chart_pie_donut: '環形圖',
