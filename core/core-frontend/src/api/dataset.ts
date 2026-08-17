@@ -275,7 +275,10 @@ export const listFieldByDatasetGroup = (datasetId: number) => {
 }
 
 export const multFieldValuesForPermissions = (data = {}) => {
-  return request.post({ url: '/datasetField/multFieldValuesForPermissions', data })
+  return request.post({
+    url: '/datasetField/multFieldValuesForPermissions',
+    data: { resultMode: 1, ...data }
+  })
 }
 
 export const multFieldValues = (data = {}) => {

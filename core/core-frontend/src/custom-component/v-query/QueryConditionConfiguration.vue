@@ -1966,7 +1966,11 @@ const handleCustomClick = async () => {
   if (sortComputed.value || curComponent.value.sort !== 'customSort') return
   let list = cloneDeep(curComponent.value.sortList || [])
   if (!list.length) {
-    const arr = await enumValueObj({ queryId: curComponent.value.sortId, searchText: '' })
+    const arr = await enumValueObj({
+      queryId: curComponent.value.sortId,
+      searchText: '',
+      resultMode: 1
+    })
     list = arr.map(ele => ele[curComponent.value.sortId])
   }
   customSortFilterRef.value.sortInit([...new Set(list)])

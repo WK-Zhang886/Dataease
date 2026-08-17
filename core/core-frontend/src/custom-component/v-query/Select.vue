@@ -343,7 +343,7 @@ const customSort = () => {
 const handleFieldIdChange = (val: EnumValue) => {
   let change = false
   loading.value = true
-  enumValueObj(val)
+  enumValueObj({ ...val, resultMode: 1 })
     .then(res => {
       let oldArr = []
       if (selectValue.value?.length && config.value.multiple) {

@@ -7,7 +7,12 @@ const filterIdNameEnumMap = {}
 const findFilterEnum = async (val: EnumValue) => {
   const queryId = val.queryId
   const displayId = val.displayId
-  const arr = await enumValueObj({ queryId: queryId, displayId: displayId, searchText: '' })
+  const arr = await enumValueObj({
+    queryId: queryId,
+    displayId: displayId,
+    searchText: '',
+    resultMode: 1
+  })
   return arr?.reduce((acc, item) => {
     acc[item[displayId]] = item[queryId]
     return acc
@@ -53,7 +58,8 @@ export const filterEnumMapSync = async componentData => {
           filterEnumMap[field.id] = await findFilterEnum({
             queryId: field.id,
             displayId,
-            searchText: ''
+            searchText: '',
+            resultMode: 1
           })
         }
       }
