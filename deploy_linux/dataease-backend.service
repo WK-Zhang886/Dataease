@@ -1,0 +1,38 @@
+# DataEase 2.10 standalone 后端 systemd 服务
+# 由 deploy.sh 安装到 /etc/systemd/system/dataease-backend.service
+# 手动使用: 复制到 /etc/systemd/system/ 后执行
+#   systemctl daemon-reload
+#   systemctl enable --now dataease-backend
+
+[Unit]
+Description=DataEase backend (standalone)
+After=network.target mariadb.service redis-server.service redis.service
+Wants=mariadb.service redis-server.service
+
+[Service]
+Type=simple
+# 运行用户（需已创建，并拥有数据目录权限）
+User=dataease
+Group=dataease
+WorkingDirectory=/opt/dataease
+ExecStart=/usr/bin/java -Xms512m -Xmx4g -jar /opt/dataease/CoreApplication.jar \
+  --server.port=18000 \
+  --spring.profiles.active=standalone \
+  --dataease.default-pwd=123456 \
+  --dataease.path.substitule=/opt/dataease2.0/conf/substitule.json \
+  --logging.file.path=/opt/dataease2.0/logs/dataease \
+  --dataease.path.excel=/opt/dataease2.0/data/excel/ \
+  --dataease.path.report=/opt/dataease2.0/data/report/ \
+  --dataease.path.exportData=/opt/dataease2.0/data/exportData/ \
+  --dataease.path.font=/opt/dataease2.0/data/font/ \
+  --dataease.path.static-resource=/opt/dataease2.0/data/static-resource/ \
+  --dataease.path.ehcache=/opt/dataease2.0/cache \
+  --dataease.path.share-secret=/opt/dataease2.0/conf/share-secret.json \
+  --dataease.path.custom-drivers=/opt/dataease2.0/custom-drivers/
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=143
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
