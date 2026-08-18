@@ -23,11 +23,7 @@ start-dataease-dev-check.bat
 后端：http://localhost:8100
 ```
 
-> Linux 部署：见 `deploy_linux/` 目录，内含两种方式——
-> - `install.sh`：**预编译产物部署（推荐）**，本地编好 jar+dist 上传到服务器，配现有 MySQL，最快最稳
-> - `deploy.sh`：**源码一键部署**，在服务器上编译，需要 JDK21/Maven/Node 等编译环境
->
-> 详细步骤见 `deploy_linux/README.md`。默认访问 `http://服务器IP:8088`，账号 `admin`，密码 `123456`。
+> Linux 部署：见 `deploy_linux/` 目录，用 `install.sh` 部署（本地编译产物 jar+dist 上传到服务器，配现有 MySQL）。默认访问 `http://服务器IP:8088`，账号 `admin`，密码 `123456`。
 
 ## 目录结构
 
