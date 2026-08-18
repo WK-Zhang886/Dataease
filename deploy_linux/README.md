@@ -10,11 +10,24 @@
   │
   └── Nginx (8088)
         ├── /        → 前端静态文件 (core-frontend/dist 构建产物)
-        └── /de2api/ → 反代到后端 127.0.0.1:18000 (剥离 de2api 前缀)
+        └── /de2api/ → 反代到后端 127.0.0.1:18000 (保留 /de2api 前缀，见下方「重要」)
                           │
                           └── Spring Boot 后端 (18000) ──→ MariaDB/MySQL (dataease10)
                                                         └──→ Redis (缓存)
 ```
+
+> **重要（务必先读）**：后端接口统一挂载在 **`/de2api`** 前缀下
+> （见 `sdk/common/.../AuthConstant.java` 的 `DE_API_PREFIX = "/de2api"`）。
+> 因此 Nginx 反代的 `proxy_pass` **末尾不能带 `/`**（带 `/` 会剥离 `/de2api` 前缀，
+> 导致 `de2api/model` 等接口 404）。正确写法：
+> ```nginx
+> proxy_pass http://127.0.0.1:18000;   # ← 末尾不要加 /
+> ```
+> 排查接口 404 时，先在后端直连验证前缀：
+> ```bash
+> curl -o /dev/null -w "%{http_code}\n" http://127.0.0.1:18000/de2api/model   # 应 200
+> curl -o /dev/null -w "%{http_code}\n" http://127.0.0.1:18000/model          # 应 404
+> ```
 
 > **端口说明**：本部署使用**独立端口**（Web `8088`、后端 `18000`），
 > 避免与服务器上**已运行的平台**（占用 80/Nginx）冲突，可共存运行。
@@ -36,7 +49,85 @@
 
 > 表结构**无需手动创建**，后端首次启动时 Flyway 会自动建表（`db/migration`）。
 
-## 快速开始（推荐）
+## 两种部署方式
+
+| 方式 | 脚本 | 适用场景 | 是否需要服务器编译环境 |
+|------|------|----------|------------------------|
+| **源码部署** | `deploy.sh` | 服务器性能强，直接用源码在服务器上编译 | 需要 JDK21/Maven/Node |
+| **产物部署（推荐）** | `install.sh` | 本地编好 jar+dist，服务器只装产物，快且稳 | 只需 JDK + Nginx |
+
+两种方式都使用**独立端口**（Web 8088 / 后端 18000），数据库默认 `dataease10`。
+
+---
+
+## 方式一：产物部署（推荐，用现有 MySQL）
+
+前提：**本地**已编译好后端 `CoreApplication.jar` + 前端 `dist/`，并打包成一个部署包。
+
+### 本地编译（Windows）
+
+```powershell
+# 后端（在 D:\Dataease\core 下）
+mvn -pl core-backend -am -DskipTests "-Dmaven.antrun.skip=true" clean package
+# 产物: core/core-backend/target/CoreApplication.jar
+
+# 前端（在 core/core-frontend 下，Windows 不能直接跑 build:base 的 NODE_OPTIONS 语法）
+$env:NODE_OPTIONS="--max_old_space_size=4096"
+node node_modules/vite/bin/vite.js build --mode base
+# 产物: core/core-frontend/dist
+```
+
+> 前端构建若报 `"Util" is not exported by @antv/g-math`，说明 `@antv/g-math` 版本被装成了
+> `0.1.6`（缺 `Util` 导出）。需把它换成 `0.1.9`（lock 文件里的正确版本）：
+> 用 `npm pack @antv/g-math@0.1.9` 解压后替换 `node_modules/@antv/g-math`，再重新构建。
+
+### 打包上传
+
+```bash
+# 组织部署包（jar + dist + install.sh + nginx.conf + service）
+mkdir -p /tmp/deploy_package
+cp core/core-backend/target/CoreApplication.jar deploy_package/
+cp -r core/core-frontend/dist deploy_package/dist
+cp deploy_linux/install.sh deploy_linux/nginx.conf deploy_linux/dataease-backend.service deploy_package/
+# 压缩上传到服务器 /root
+tar -czf deploy_package.tar.gz deploy_package
+scp deploy_package.tar.gz root@服务器IP:/root/
+```
+
+### 服务器安装
+
+```bash
+# 0. 确保服务器已装 JDK21 + Nginx（已有 MySQL 则无需 MariaDB）
+sudo apt update && sudo apt install -y openjdk-21-jre-headless nginx
+
+# 1. 提前在现有 MySQL 里建库和账号（如未建）
+sudo mysql <<'SQL'
+CREATE DATABASE IF NOT EXISTS dataease10 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER IF NOT EXISTS 'dataease'@'localhost' IDENTIFIED BY '123456';
+CREATE USER IF NOT EXISTS 'dataease'@'127.0.0.1' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON dataease10.* TO 'dataease'@'localhost';
+GRANT ALL PRIVILEGES ON dataease10.* TO 'dataease'@'127.0.0.1';
+FLUSH PRIVILEGES;
+SQL
+
+# 2. 解压并安装
+cd /root
+tar -xzf deploy_package.tar.gz
+cd deploy_package
+chmod +x install.sh
+bash install.sh
+
+# 3. 阿里云安全组放行 8088（TCP，授权 0.0.0.0/0）
+```
+
+> `install.sh` 顶部的 `DB_*`/`ADMIN_PASSWORD`/`WEB_PORT`/`BACKEND_PORT` 均可在脚本中修改，
+> 数据库连接参数编译在 `application-standalone.yml` 里（默认 `dataease/123456/dataease10`）。
+
+完成后访问：`http://服务器IP:8088`（账号 `admin` / 密码 `123456`）。
+
+---
+
+## 方式二：源码一键部署（deploy.sh）
 
 把整个仓库（含 `deploy_linux/`）传到 Linux，然后以 root 运行：
 
@@ -54,6 +145,9 @@ bash deploy.sh
 6. 生成 systemd 服务 + Nginx 配置并启动
 
 完成后访问：`http://服务器IP:8088`
+
+> 若不想装 MariaDB，改用现有 MySQL：在 `deploy.sh` 顶部修改
+> `DB_HOST`/`DB_PORT`/`DB_USER`/`DB_PASSWORD` 指向现有 MySQL，脚本会跳过 MariaDB 安装。
 
 ## 手动部署步骤
 
@@ -199,12 +293,26 @@ cat /opt/dataease2.0/conf/substitule.json
 
 **Q6: 已存在 MySQL，不想再装 MariaDB？**
 在 `deploy.sh` 顶部修改 `DB_HOST`/`DB_PORT`/`DB_USER`/`DB_PASSWORD` 指向现有 MySQL，脚本会自动跳过 MariaDB 安装。
+或直接使用**产物部署** `install.sh`（本目录推荐方式），它不安装数据库，只配现有 MySQL。
+
+**Q7: 接口 404（登录页打不开、一直转圈）？**
+多为 Nginx `proxy_pass` 末尾带 `/` 剥离了 `/de2api` 前缀所致。修正：
+```bash
+sed -i 's#proxy_pass http://127.0.0.1:18000/;#proxy_pass http://127.0.0.1:18000;#g' /etc/nginx/conf.d/dataease.conf
+nginx -t && systemctl reload nginx
+```
+验证：`curl -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8088/de2api/model` 应返回 200。
+
+**Q8: 启动日志有 `ClassNotFoundException: oracle.jdbc.driver.OracleDriver` 等？**
+这是无害警告——后端尝试注册各种数据库驱动（Oracle/PostgreSQL/Redshift/DB2）时，
+`drivers/` 目录缺少对应 jar。DataEase 只用 MySQL/MariaDB，**不影响运行**，可忽略。
 
 ## 文件清单
 
 | 文件 | 用途 |
 |------|------|
-| `deploy.sh` | 一键部署脚本（推荐） |
-| `nginx.conf` | Nginx 配置模板 |
+| `deploy.sh` | 源码一键部署脚本（在服务器上编译） |
+| `install.sh` | 预编译产物部署脚本（推荐，配现有 MySQL） |
+| `nginx.conf` | Nginx 配置模板（`proxy_pass` 末尾**不带** `/`） |
 | `dataease-backend.service` | systemd 服务模板 |
 | `README.md` | 本说明 |
