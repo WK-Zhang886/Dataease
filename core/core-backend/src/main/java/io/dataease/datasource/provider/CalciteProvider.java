@@ -1078,9 +1078,9 @@ public class CalciteProvider extends Provider {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
@@ -1094,9 +1094,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1111,9 +1111,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1129,9 +1129,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1147,9 +1147,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1164,9 +1164,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1181,9 +1181,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1198,9 +1198,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1215,9 +1215,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
@@ -1232,9 +1232,9 @@ public class CalciteProvider extends Provider {
                                 if (StringUtils.isNotBlank(configuration.getPassword())) {
                                     dataSource.setPassword(configuration.getPassword());
                                 }
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                dataSource.setInitialSize(5);
+                                dataSource.setMaxTotal(20);
+                                dataSource.setMinIdle(5);
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
