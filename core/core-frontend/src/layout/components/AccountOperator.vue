@@ -102,6 +102,12 @@ if (uid.value === '1') {
   if (!desktop) {
     linkLoaded([{ id: 2, link: '/modify-pwd/index', label: t('user.change_password') }])
   }
+} else {
+  // 多账号（dedev）：所有账号都显示"修改密码"入口
+  const desktop = wsCache.get('app.desktop')
+  if (!desktop) {
+    linkLoaded([{ id: 2, link: '/modify-pwd/index', label: t('user.change_password') }])
+  }
 }
 </script>
 
