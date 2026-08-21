@@ -82,6 +82,41 @@ bash install.sh
 
 安装完成后访问 `http://服务器IP:8088`，账号 `admin`，密码 `123456`。
 
+### 4. 仅更新前端 dist
+
+如果只修改了前端，可以把本地生成的 `dist` 压缩为 `dist.zip` 上传到服务器 `/root/dist.zip`，无需重启后端。服务器上执行：
+
+```bash
+set -e
+
+WEB_ROOT=/opt/dataease2.0/webroot
+STAMP=$(date +%Y%m%d%H%M%S)
+TMP_DIR=/root/dist_unpack_$STAMP
+
+mkdir -p "$TMP_DIR"
+unzip -q /root/dist.zip -d "$TMP_DIR"
+
+if [ -f "$TMP_DIR/index.html" ]; then
+  SRC_DIR="$TMP_DIR"
+elif [ -f "$TMP_DIR/dist/index.html" ]; then
+  SRC_DIR="$TMP_DIR/dist"
+else
+  echo "dist.zip 内没有找到 index.html"
+  exit 1
+fi
+
+mv "$WEB_ROOT" "${WEB_ROOT}.bak.$STAMP"
+mkdir -p "$WEB_ROOT"
+cp -a "$SRC_DIR/." "$WEB_ROOT/"
+chown -R dataease:dataease "$WEB_ROOT" 2>/dev/null || true
+
+nginx -t
+systemctl reload nginx
+curl -s http://127.0.0.1:8088/de2api/model
+```
+
+旧前端会保留在 `/opt/dataease2.0/webroot.bak.<时间戳>`，确认新版本正常后再手动清理。更新后浏览器执行强制刷新（`Ctrl + Shift + R`）。
+
 ## 常见问题
 
 **Q1: 接口 404（登录页打不开 / 一直转圈）？**

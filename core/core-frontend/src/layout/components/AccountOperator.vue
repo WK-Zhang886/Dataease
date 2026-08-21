@@ -42,18 +42,29 @@ const linkLoaded = items => {
   items.forEach(item => linkList.value.push(item))
   linkList.value.sort(compare('id'))
 }
-const xpackLinkLoaded = items => {
-  let len = linkList.value.length
-  while (len--) {
-    if (linkList.value[len]?.id === 2 && linkList.value[len]?.link === '/modify-pwd/index') {
-      linkList.value.splice(len, 1)
-    }
+
+const changePasswordLink: LinkItem = {
+  id: 2,
+  link: '/modify-pwd/index',
+  label: t('user.change_password')
+}
+
+const isChangePasswordLink = (item?: LinkItem) => item?.link === changePasswordLink.link
+
+const addChangePasswordLink = () => {
+  if (!linkList.value.some(isChangePasswordLink)) {
+    linkList.value.push(changePasswordLink)
   }
-  items.forEach(item => linkList.value.push(item))
+}
+
+const xpackLinkLoaded = items => {
+  // Community edition owns the self-service password entry. X-Pack must not remove it.
+  const xpackItems = (Array.isArray(items) ? items : []).filter(item => !isChangePasswordLink(item))
+  xpackItems.forEach(item => linkList.value.push(item))
   if (inPlatformClient.value) {
-    len = linkList.value.length
+    let len = linkList.value.length
     while (len--) {
-      if (linkList.value[len]?.id === 2) {
+      if (isChangePasswordLink(linkList.value[len])) {
         linkList.value.splice(len, 1)
       }
     }
@@ -96,18 +107,12 @@ const openPopover = () => {
   unref(popoverRef).popperRef?.delayHide?.()
 }
 
-if (uid.value === '1') {
+if (String(uid.value) === '1') {
   linkLoaded([{ id: 4, link: '/sys-setting/parameter', label: t('commons.system_setting') }])
-  const desktop = wsCache.get('app.desktop')
-  if (!desktop) {
-    linkLoaded([{ id: 2, link: '/modify-pwd/index', label: t('user.change_password') }])
-  }
-} else {
-  // 多账号（dedev）：所有账号都显示"修改密码"入口
-  const desktop = wsCache.get('app.desktop')
-  if (!desktop) {
-    linkLoaded([{ id: 2, link: '/modify-pwd/index', label: t('user.change_password') }])
-  }
+}
+
+if (!wsCache.get('app.desktop')) {
+  addChangePasswordLink()
 }
 </script>
 
